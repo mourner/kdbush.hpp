@@ -23,4 +23,11 @@ int main(int argc, char **argv) {
     std::cout << "radius query:\n";
     for (auto i : result) std::cout << i << ' ';
     std::cout << '\n';
+
+    std::vector<std::size_t> result2;
+    index.range(20, 30, 50, 70, result2);
+
+    std::cout << "range query:\n";
+    for (auto i : result2) std::cout << i << ' ';
+    std::cout << '\n';
 }

@@ -19,6 +19,14 @@ public:
         sortKD(0, ids.size() - 1, 0);
     }
 
+    void range(const double minX,
+               const double minY,
+               const double maxX,
+               const double maxY,
+               std::vector<size_t> &result) {
+        range(minX, minY, maxX, maxY, result, 0, ids.size() - 1, 0);
+    }
+
     void within(const double qx, const double qy, const double r, std::vector<size_t> &result) {
         within(qx, qy, r, result, 0, ids.size() - 1, 0);
     }
@@ -27,6 +35,37 @@ private:
     uint8_t nodeSize;
     std::vector<size_t> ids;
     std::vector<double> coords;
+
+    void range(const double minX,
+               const double minY,
+               const double maxX,
+               const double maxY,
+               std::vector<size_t> &result,
+               const size_t left,
+               const size_t right,
+               const uint8_t axis) {
+
+        if (right - left <= nodeSize) {
+            for (auto i = left; i <= right; i++) {
+                const double x = coords[2 * i];
+                const double y = coords[2 * i + 1];
+                if (x >= minX && x <= maxX && y >= minY && y <= maxY) result.push_back(ids[i]);
+            }
+            return;
+        }
+
+        const size_t m = (left + right) >> 1;
+        const double x = coords[2 * m];
+        const double y = coords[2 * m + 1];
+
+        if (x >= minX && x <= maxX && y >= minY && y <= maxY) result.push_back(ids[m]);
+
+        if (axis == 0 ? minX <= x : minY <= y)
+            range(minX, minY, maxX, maxY, result, left, m - 1, (axis + 1) % 2);
+
+        if (axis == 0 ? maxX >= x : maxY >= y)
+            range(minX, minY, maxX, maxY, result, m + 1, right, (axis + 1) % 2);
+    }
 
     void within(const double qx,
                 const double qy,

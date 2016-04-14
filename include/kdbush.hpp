@@ -12,9 +12,9 @@ public:
     KDBush(const std::vector<double> &coords_, const uint8_t nodeSize_ = 64)
         : coords(coords_), nodeSize(nodeSize_) {
 
-        const size_t ids_size = coords.size() / 2;
+        const auto ids_size = coords.size() / 2;
         ids.reserve(ids_size);
-        for (size_t i = 0; i < ids_size; i++) ids.push_back(i);
+        for (auto i = 0; i < ids_size; i++) ids.push_back(i);
 
         sortKD(0, ids.size() - 1, 0);
     }
@@ -27,7 +27,7 @@ public:
                 const size_t right,
                 const uint8_t axis) {
 
-        const double r2 = r * r;
+        const auto r2 = r * r;
 
         if (right - left <= nodeSize) {
             for (auto i = left; i <= right; i++) {
@@ -37,9 +37,9 @@ public:
             return;
         }
 
-        const size_t m = (left + right) >> 1;
-        const double x = coords[2 * m];
-        const double y = coords[2 * m + 1];
+        const auto m = (left + right) >> 1;
+        const auto x = coords[2 * m];
+        const auto y = coords[2 * m + 1];
 
         if (sqDist(x, y, qx, qy) <= r2) result.push_back(ids[m]);
 
@@ -61,7 +61,7 @@ private:
 
     void sortKD(const size_t left, const size_t right, const uint8_t axis) {
         if (right - left <= nodeSize) return;
-        const size_t m = (left + right) >> 1;
+        const auto m = (left + right) >> 1;
         select(m, left, right, axis);
         sortKD(left, m - 1, (axis + 1) % 2);
         sortKD(m + 1, right, (axis + 1) % 2);
@@ -71,20 +71,19 @@ private:
 
         while (right > left) {
             if (right - left > 600) {
-                size_t n = right - left + 1;
-                size_t m = k - left + 1;
-                const double z = log(n);
-                const double s = 0.5 * exp(2 * z / 3);
-                double sd = 0.5 * sqrt(z * s * (n - s) / n);
-                if (2 * m < n) sd = -sd;
-                const size_t newLeft = std::max(left, size_t(k - m * s / n + sd));
-                const size_t newRight = std::min(right, size_t(k + (n - m) * s / n + sd));
+                const auto n = right - left + 1;
+                const auto m = k - left + 1;
+                const auto z = log(n);
+                const auto s = 0.5 * exp(2 * z / 3);
+                const auto sd = 0.5 * sqrt(z * s * (n - s) / n) * (2 * m < n ? 1 : -1);
+                const auto newLeft = std::max(left, size_t(k - m * s / n + sd));
+                const auto newRight = std::min(right, size_t(k + (n - m) * s / n + sd));
                 select(k, newLeft, newRight, axis);
             }
 
             const auto t = coords[2 * k + axis];
-            size_t i = left;
-            size_t j = right;
+            auto i = left;
+            auto j = right;
 
             swapItem(left, k);
             if (coords[2 * right + axis] > t) swapItem(left, right);
@@ -116,8 +115,8 @@ private:
     }
 
     double sqDist(const double ax, const double ay, const double bx, const double by) {
-        const double dx = ax - bx;
-        const double dy = ay - by;
+        const auto dx = ax - bx;
+        const auto dy = ay - by;
         return dx * dx + dy * dy;
     }
 };

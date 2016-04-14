@@ -17,14 +17,10 @@ int main(int argc, char **argv) {
 
     KDBush index(coords, 10);
 
-    std::cout << "sorted ids:\n";
-    for (auto i : index.ids) std::cout << i << ' ';
-    std::cout << '\n';
-
     std::vector<std::size_t> result;
     index.within(50, 50, 20, result);
 
-    std::cout << "query:\n";
+    std::cout << "radius query:\n";
     for (auto i : result) std::cout << i << ' ';
     std::cout << '\n';
 }

@@ -5,7 +5,56 @@
 #include <vector>
 
 class KDBush {
+
+public:
+    KDBush(std::vector<double> const &coords_, uint8_t nodeSize_ = 64)
+        : coords(coords_), nodeSize(nodeSize_) {
+
+        std::size_t ids_size = coords.size() / 2;
+        ids.reserve(ids_size);
+        for (std::size_t i = 0; i < ids_size; i++) ids.push_back(i);
+
+        sortKD(0, ids.size() - 1, 0);
+    }
+
+    void within(double qx,
+                double qy,
+                double r,
+                std::vector<std::size_t> &result,
+                std::size_t left,
+                std::size_t right,
+                uint8_t axis) {
+
+        double r2 = r * r;
+
+        if (right - left <= nodeSize) {
+            for (auto i = left; i <= right; i++) {
+                if (sqDist(coords[2 * i], coords[2 * i + 1], qx, qy) <= r2)
+                    result.push_back(ids[i]);
+            }
+            return;
+        }
+
+        std::size_t m = (left + right) >> 1;
+        double x = coords[2 * m];
+        double y = coords[2 * m + 1];
+
+        if (sqDist(x, y, qx, qy) <= r2) result.push_back(ids[m]);
+
+        if (axis == 0 ? qx - r <= x : qy - r <= y)
+            within(qx, qy, r, result, left, m - 1, (axis + 1) % 2);
+
+        if (axis == 0 ? qx + r >= x : qy + r >= y)
+            within(qx, qy, r, result, m + 1, right, (axis + 1) % 2);
+    }
+
+    void within(double qx, double qy, double r, std::vector<std::size_t> &result) {
+        within(qx, qy, r, result, 0, ids.size() - 1, 0);
+    }
+
+private:
     uint8_t nodeSize;
+    std::vector<std::size_t> ids;
     std::vector<double> coords;
 
     void sortKD(std::size_t left, std::size_t right, uint8_t axis) {
@@ -68,52 +117,5 @@ class KDBush {
         double dx = ax - bx;
         double dy = ay - by;
         return dx * dx + dy * dy;
-    }
-
-public:
-    std::vector<std::size_t> ids;
-
-    KDBush(std::vector<double> const &coords_, uint8_t nodeSize_ = 64)
-        : coords(coords_), nodeSize(nodeSize_) {
-        std::size_t ids_size = coords.size() / 2;
-        ids.reserve(ids_size);
-        for (std::size_t i = 0; i < ids_size; i++) ids.push_back(i);
-
-        sortKD(0, ids.size() - 1, 0);
-    }
-
-    void within(double qx,
-                double qy,
-                double r,
-                std::vector<std::size_t> &result,
-                std::size_t left,
-                std::size_t right,
-                uint8_t axis) {
-
-        double r2 = r * r;
-
-        if (right - left <= nodeSize) {
-            for (auto i = left; i <= right; i++) {
-                if (sqDist(coords[2 * i], coords[2 * i + 1], qx, qy) <= r2)
-                    result.push_back(ids[i]);
-            }
-            return;
-        }
-
-        std::size_t m = (left + right) >> 1;
-        double x = coords[2 * m];
-        double y = coords[2 * m + 1];
-
-        if (sqDist(x, y, qx, qy) <= r2) result.push_back(ids[m]);
-
-        if (axis == 0 ? qx - r <= x : qy - r <= y)
-            within(qx, qy, r, result, left, m - 1, (axis + 1) % 2);
-
-        if (axis == 0 ? qx + r >= x : qy + r >= y)
-            within(qx, qy, r, result, m + 1, right, (axis + 1) % 2);
-    }
-
-    void within(double qx, double qy, double r, std::vector<std::size_t> &result) {
-        within(qx, qy, r, result, 0, ids.size() - 1, 0);
     }
 };

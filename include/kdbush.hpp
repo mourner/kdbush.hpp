@@ -70,14 +70,14 @@ class KDBush {
                        double qx,
                        double qy,
                        double r,
-                       std::vector<uint32_t> *result) {
+                       std::vector<uint32_t> &result) {
 
         double r2 = r * r;
 
         if (right - left <= nodeSize) {
             for (auto i = left; i <= right; i++) {
                 if (sqDist(coords[2 * i], coords[2 * i + 1], qx, qy) <= r2)
-                    result->push_back(ids[i]);
+                    result.push_back(ids[i]);
             }
             return;
         }
@@ -86,7 +86,7 @@ class KDBush {
         double x = coords[2 * m];
         double y = coords[2 * m + 1];
 
-        if (sqDist(x, y, qx, qy) <= r2) result->push_back(ids[m]);
+        if (sqDist(x, y, qx, qy) <= r2) result.push_back(ids[m]);
 
         if (axis == 0 ? qx - r <= x : qy - r <= y)
             search_within(left, m - 1, (axis + 1) % 2, qx, qy, r, result);
@@ -104,7 +104,7 @@ class KDBush {
 public:
     std::vector<uint32_t> ids;
 
-    KDBush(std::vector<double> coords_, uint8_t nodeSize_ = 64)
+    KDBush(std::vector<double> const &coords_, uint8_t nodeSize_ = 64)
         : coords(coords_), nodeSize(nodeSize_) {
         uint32_t ids_size = coords.size() / 2;
         ids.reserve(ids_size);
@@ -115,7 +115,7 @@ public:
 
     std::vector<uint32_t> within(double qx, double qy, double r) {
         std::vector<uint32_t> result;
-        search_within(0, ids.size() - 1, 0, qx, qy, r, &result);
+        search_within(0, ids.size() - 1, 0, qx, qy, r, result);
         return result;
     }
 };

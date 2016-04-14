@@ -19,6 +19,15 @@ public:
         sortKD(0, ids.size() - 1, 0);
     }
 
+    void within(const double qx, const double qy, const double r, std::vector<size_t> &result) {
+        within(qx, qy, r, result, 0, ids.size() - 1, 0);
+    }
+
+private:
+    uint8_t nodeSize;
+    std::vector<size_t> ids;
+    std::vector<double> coords;
+
     void within(const double qx,
                 const double qy,
                 const double r,
@@ -49,15 +58,6 @@ public:
         if (axis == 0 ? qx + r >= x : qy + r >= y)
             within(qx, qy, r, result, m + 1, right, (axis + 1) % 2);
     }
-
-    void within(const double qx, const double qy, const double r, std::vector<size_t> &result) {
-        within(qx, qy, r, result, 0, ids.size() - 1, 0);
-    }
-
-private:
-    uint8_t nodeSize;
-    std::vector<size_t> ids;
-    std::vector<double> coords;
 
     void sortKD(const size_t left, const size_t right, const uint8_t axis) {
         if (right - left <= nodeSize) return;

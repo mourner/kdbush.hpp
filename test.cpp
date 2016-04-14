@@ -21,7 +21,7 @@ int main(int argc, char **argv) {
     for (auto i : index.ids) std::cout << i << ' ';
     std::cout << '\n';
 
-    std::vector<uint32_t> result = index.within(50, 50, 20);
+    std::vector<std::size_t> result = index.within(50, 50, 20);
 
     std::cout << "query:\n";
     for (auto i : result) std::cout << i << ' ';

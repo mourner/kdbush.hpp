@@ -15,9 +15,15 @@ int main(int argc, char **argv) {
         65, 48, 33, 18, 87, 28, 10, 10, 40, 34, 10, 20, 47, 29, 46, 78
     };
 
-    KDBush index(coords);
+    KDBush index(coords, 10);
 
-    for (auto i : index.ids) {
-        std::cout << i << ' ';
-    }
+    std::cout << "sorted ids:\n";
+    for (auto i : index.ids) std::cout << i << ' ';
+    std::cout << '\n';
+
+    std::vector<uint32_t> result = index.within(50, 50, 20);
+
+    std::cout << "query:\n";
+    for (auto i : result) std::cout << i << ' ';
+    std::cout << '\n';
 }

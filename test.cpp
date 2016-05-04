@@ -2,8 +2,8 @@
 
 #include <cassert>
 #include <iostream>
-#include <vector>
 #include <iterator>
+#include <vector>
 
 static std::vector<double> coords = {
     54, 1,  97, 21, 65, 35, 33, 54, 95, 39, 54, 3,  53, 54, 84, 72, 33, 34, 43, 15, 52, 83, 81,

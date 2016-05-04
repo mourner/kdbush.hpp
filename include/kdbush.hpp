@@ -2,19 +2,20 @@
 
 #include <algorithm>
 #include <cmath>
-#include <vector>
 #include <iterator>
+#include <vector>
 
-template<class TNumber = double, class TIndex = std::size_t>
+template <class TNumber = double, class TIndex = std::size_t>
 class KDBush {
 
 public:
     static const uint8_t defaultNodeSize = 64;
 
     KDBush(const std::vector<TNumber> &coords_, const uint8_t nodeSize_ = defaultNodeSize)
-        : KDBush(std::begin(coords_), std::end(coords_), nodeSize_) {}
+        : KDBush(std::begin(coords_), std::end(coords_), nodeSize_) {
+    }
 
-    template<typename TCoordIter>
+    template <typename TCoordIter>
     KDBush(TCoordIter coordsBegin, TCoordIter coordsEnd, const uint8_t nodeSize_ = defaultNodeSize)
         : coords(std::distance(coordsBegin, coordsEnd)), nodeSize(nodeSize_) {
 
@@ -27,7 +28,7 @@ public:
         sortKD(0, ids.size() - 1, 0);
     }
 
-    template<typename TOutputIter>
+    template <typename TOutputIter>
     void range(const TNumber minX,
                const TNumber minY,
                const TNumber maxX,
@@ -36,7 +37,7 @@ public:
         range(minX, minY, maxX, maxY, out, 0, ids.size() - 1, 0);
     }
 
-    template<typename TOutputIter>
+    template <typename TOutputIter>
     void within(const TNumber qx, const TNumber qy, const TNumber r, TOutputIter out) {
         within(qx, qy, r, out, 0, ids.size() - 1, 0);
     }
@@ -46,7 +47,7 @@ private:
     std::vector<TNumber> coords;
     uint8_t nodeSize;
 
-    template<typename TOutputIter>
+    template <typename TOutputIter>
     void range(const TNumber minX,
                const TNumber minY,
                const TNumber maxX,
@@ -78,7 +79,7 @@ private:
             range(minX, minY, maxX, maxY, out, m + 1, right, (axis + 1) % 2);
     }
 
-    template<typename TOutputIter>
+    template <typename TOutputIter>
     void within(const TNumber qx,
                 const TNumber qy,
                 const TNumber r,
@@ -91,8 +92,7 @@ private:
 
         if (right - left <= nodeSize) {
             for (auto i = left; i <= right; i++) {
-                if (sqDist(coords[2 * i], coords[2 * i + 1], qx, qy) <= r2)
-                    *out++ = ids[i];
+                if (sqDist(coords[2 * i], coords[2 * i + 1], qx, qy) <= r2) *out++ = ids[i];
             }
             return;
         }

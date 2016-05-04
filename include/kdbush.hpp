@@ -32,9 +32,9 @@ public:
     }
 
 private:
-    uint8_t nodeSize;
     std::vector<size_t> ids;
     std::vector<double> coords;
+    uint8_t nodeSize;
 
     void range(const double minX,
                const double minY,

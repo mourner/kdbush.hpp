@@ -6,6 +6,7 @@
 #include <vector>
 
 using TPoint = std::pair<int, int>;
+using TIds = std::vector<std::size_t>;
 
 static std::vector<TPoint> points = {
     { 54, 1 },  { 97, 21 }, { 65, 35 }, { 33, 54 }, { 95, 39 }, { 54, 3 },  { 53, 54 }, { 84, 72 },
@@ -23,10 +24,8 @@ static std::vector<TPoint> points = {
     { 40, 34 }, { 10, 20 }, { 47, 29 }, { 46, 78 }
 };
 
-using TIds = std::vector<std::size_t>;
-
 static void testRange() {
-    KDBush<TPoint> index(points, 10);
+    kdbush::KDBush<TPoint> index(points, 10);
     TIds expectedIds = { 3, 90, 77, 72, 62, 96, 47, 8, 17, 15, 69, 71, 44, 19, 18, 45, 60, 20 };
     TIds result;
     index.range(20, 30, 50, 70, std::back_inserter(result));
@@ -35,7 +34,7 @@ static void testRange() {
 }
 
 static void testRadius() {
-    KDBush<TPoint> index(points, 10);
+    kdbush::KDBush<TPoint> index(points, 10);
     TIds expectedIds = { 3, 96, 71, 44, 18, 45, 60, 6, 25, 92, 42, 20 };
     TIds result;
     index.within(50, 50, 20, std::back_inserter(result));

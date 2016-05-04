@@ -3,6 +3,7 @@
 #include <cassert>
 #include <iostream>
 #include <vector>
+#include <iterator>
 
 static std::vector<double> coords = {
     54, 1,  97, 21, 65, 35, 33, 54, 95, 39, 54, 3,  53, 54, 84, 72, 33, 34, 43, 15, 52, 83, 81,
@@ -22,7 +23,7 @@ static void testRange() {
     KDBush<> index(coords, 10);
     TIds expectedIds = { 3, 90, 77, 72, 62, 96, 47, 8, 17, 15, 69, 71, 44, 19, 18, 45, 60, 20 };
     TIds result;
-    index.range(20, 30, 50, 70, result);
+    index.range(20, 30, 50, 70, std::back_inserter(result));
 
     assert(std::equal(expectedIds.begin(), expectedIds.end(), result.begin()));
 }
@@ -31,7 +32,7 @@ static void testRadius() {
     KDBush<> index(coords, 10);
     TIds expectedIds = { 3, 96, 71, 44, 18, 45, 60, 6, 25, 92, 42, 20 };
     TIds result;
-    index.within(50, 50, 20, result);
+    index.within(50, 50, 20, std::back_inserter(result));
 
     assert(std::equal(expectedIds.begin(), expectedIds.end(), result.begin()));
 }

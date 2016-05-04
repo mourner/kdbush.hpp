@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cmath>
 #include <vector>
+#include <iterator>
 
 template<class TNumber = double, class TIndex = std::size_t>
 class KDBush {
@@ -18,16 +19,18 @@ public:
         sortKD(0, ids.size() - 1, 0);
     }
 
+    template<typename TOutputIter>
     void range(const TNumber minX,
                const TNumber minY,
                const TNumber maxX,
                const TNumber maxY,
-               std::vector<TIndex> &result) {
-        range(minX, minY, maxX, maxY, result, 0, ids.size() - 1, 0);
+               TOutputIter out) {
+        range(minX, minY, maxX, maxY, out, 0, ids.size() - 1, 0);
     }
 
-    void within(const TNumber qx, const TNumber qy, const TNumber r, std::vector<TIndex> &result) {
-        within(qx, qy, r, result, 0, ids.size() - 1, 0);
+    template<typename TOutputIter>
+    void within(const TNumber qx, const TNumber qy, const TNumber r, TOutputIter out) {
+        within(qx, qy, r, out, 0, ids.size() - 1, 0);
     }
 
 private:
@@ -35,11 +38,12 @@ private:
     std::vector<TNumber> coords;
     uint8_t nodeSize;
 
+    template<typename TOutputIter>
     void range(const TNumber minX,
                const TNumber minY,
                const TNumber maxX,
                const TNumber maxY,
-               std::vector<TIndex> &result,
+               TOutputIter out,
                const TIndex left,
                const TIndex right,
                const uint8_t axis) {
@@ -48,7 +52,7 @@ private:
             for (auto i = left; i <= right; i++) {
                 const TNumber x = coords[2 * i];
                 const TNumber y = coords[2 * i + 1];
-                if (x >= minX && x <= maxX && y >= minY && y <= maxY) result.push_back(ids[i]);
+                if (x >= minX && x <= maxX && y >= minY && y <= maxY) *out++ = ids[i];
             }
             return;
         }
@@ -57,19 +61,20 @@ private:
         const TNumber x = coords[2 * m];
         const TNumber y = coords[2 * m + 1];
 
-        if (x >= minX && x <= maxX && y >= minY && y <= maxY) result.push_back(ids[m]);
+        if (x >= minX && x <= maxX && y >= minY && y <= maxY) *out++ = ids[m];
 
         if (axis == 0 ? minX <= x : minY <= y)
-            range(minX, minY, maxX, maxY, result, left, m - 1, (axis + 1) % 2);
+            range(minX, minY, maxX, maxY, out, left, m - 1, (axis + 1) % 2);
 
         if (axis == 0 ? maxX >= x : maxY >= y)
-            range(minX, minY, maxX, maxY, result, m + 1, right, (axis + 1) % 2);
+            range(minX, minY, maxX, maxY, out, m + 1, right, (axis + 1) % 2);
     }
 
+    template<typename TOutputIter>
     void within(const TNumber qx,
                 const TNumber qy,
                 const TNumber r,
-                std::vector<TIndex> &result,
+                TOutputIter out,
                 const TIndex left,
                 const TIndex right,
                 const uint8_t axis) {
@@ -79,7 +84,7 @@ private:
         if (right - left <= nodeSize) {
             for (auto i = left; i <= right; i++) {
                 if (sqDist(coords[2 * i], coords[2 * i + 1], qx, qy) <= r2)
-                    result.push_back(ids[i]);
+                    *out++ = ids[i];
             }
             return;
         }
@@ -88,13 +93,13 @@ private:
         const TNumber x = coords[2 * m];
         const TNumber y = coords[2 * m + 1];
 
-        if (sqDist(x, y, qx, qy) <= r2) result.push_back(ids[m]);
+        if (sqDist(x, y, qx, qy) <= r2) *out++ = ids[m];
 
         if (axis == 0 ? qx - r <= x : qy - r <= y)
-            within(qx, qy, r, result, left, m - 1, (axis + 1) % 2);
+            within(qx, qy, r, out, left, m - 1, (axis + 1) % 2);
 
         if (axis == 0 ? qx + r >= x : qy + r >= y)
-            within(qx, qy, r, result, m + 1, right, (axis + 1) % 2);
+            within(qx, qy, r, out, m + 1, right, (axis + 1) % 2);
     }
 
     void sortKD(const TIndex left, const TIndex right, const uint8_t axis) {

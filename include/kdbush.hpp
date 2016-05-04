@@ -1,27 +1,36 @@
 #pragma once
 
-#include <algorithm>
 #include <cmath>
-#include <iterator>
 #include <vector>
 
-template <class TNumber = double, class TIndex = std::size_t>
+template <uint8_t I, typename T>
+struct nth {
+    inline static typename std::tuple_element<I, T>::type get(const T &t) {
+        return std::get<I>(t);
+    }
+};
+
+template <typename TPoint, typename TIndex = std::size_t>
 class KDBush {
 
 public:
+    using TNumber = decltype(nth<0, TPoint>::get(std::declval<TPoint>()));
+
     static const uint8_t defaultNodeSize = 64;
 
-    KDBush(const std::vector<TNumber> &coords_, const uint8_t nodeSize_ = defaultNodeSize)
-        : KDBush(std::begin(coords_), std::end(coords_), nodeSize_) {
+    KDBush(const std::vector<TPoint> &points_, const uint8_t nodeSize_ = defaultNodeSize)
+        : KDBush(std::begin(points_), std::end(points_), nodeSize_) {
     }
 
-    template <typename TCoordIter>
-    KDBush(TCoordIter coordsBegin, TCoordIter coordsEnd, const uint8_t nodeSize_ = defaultNodeSize)
-        : coords(std::distance(coordsBegin, coordsEnd)), nodeSize(nodeSize_) {
+    template <typename TPointIter>
+    KDBush(TPointIter points_begin,
+           TPointIter points_end,
+           const uint8_t nodeSize_ = defaultNodeSize)
+        : points(std::distance(points_begin, points_end)), nodeSize(nodeSize_) {
 
-        std::copy(coordsBegin, coordsEnd, coords.data());
+        std::copy(points_begin, points_end, points.data());
 
-        const auto ids_size = coords.size() / 2;
+        const auto ids_size = points.size();
         ids.reserve(ids_size);
         for (TIndex i = 0; i < ids_size; i++) ids.push_back(i);
 
@@ -44,7 +53,7 @@ public:
 
 private:
     std::vector<TIndex> ids;
-    std::vector<TNumber> coords;
+    std::vector<TPoint> points;
     uint8_t nodeSize;
 
     template <typename TOutputIter>
@@ -59,16 +68,16 @@ private:
 
         if (right - left <= nodeSize) {
             for (auto i = left; i <= right; i++) {
-                const TNumber x = coords[2 * i];
-                const TNumber y = coords[2 * i + 1];
+                const TNumber x = nth<0, TPoint>::get(points[i]);
+                const TNumber y = nth<1, TPoint>::get(points[i]);
                 if (x >= minX && x <= maxX && y >= minY && y <= maxY) *out++ = ids[i];
             }
             return;
         }
 
         const TIndex m = (left + right) >> 1;
-        const TNumber x = coords[2 * m];
-        const TNumber y = coords[2 * m + 1];
+        const TNumber x = nth<0, TPoint>::get(points[m]);
+        const TNumber y = nth<1, TPoint>::get(points[m]);
 
         if (x >= minX && x <= maxX && y >= minY && y <= maxY) *out++ = ids[m];
 
@@ -92,14 +101,16 @@ private:
 
         if (right - left <= nodeSize) {
             for (auto i = left; i <= right; i++) {
-                if (sqDist(coords[2 * i], coords[2 * i + 1], qx, qy) <= r2) *out++ = ids[i];
+                const TNumber x = nth<0, TPoint>::get(points[i]);
+                const TNumber y = nth<1, TPoint>::get(points[i]);
+                if (sqDist(x, y, qx, qy) <= r2) *out++ = ids[i];
             }
             return;
         }
 
         const TIndex m = (left + right) >> 1;
-        const TNumber x = coords[2 * m];
-        const TNumber y = coords[2 * m + 1];
+        const TNumber x = nth<0, TPoint>::get(points[m]);
+        const TNumber y = nth<1, TPoint>::get(points[m]);
 
         if (sqDist(x, y, qx, qy) <= r2) *out++ = ids[m];
 
@@ -113,12 +124,17 @@ private:
     void sortKD(const TIndex left, const TIndex right, const uint8_t axis) {
         if (right - left <= nodeSize) return;
         const TIndex m = (left + right) >> 1;
-        select(m, left, right, axis);
+        if (axis == 0) {
+            select<0>(m, left, right);
+        } else {
+            select<1>(m, left, right);
+        }
         sortKD(left, m - 1, (axis + 1) % 2);
         sortKD(m + 1, right, (axis + 1) % 2);
     }
 
-    void select(const TIndex k, TIndex left, TIndex right, const uint8_t axis) {
+    template <uint8_t axis>
+    void select(const TIndex k, TIndex left, TIndex right) {
 
         while (right > left) {
             if (right - left > 600) {
@@ -129,25 +145,25 @@ private:
                 const double sd = 0.5 * sqrt(z * s * (n - s) / n) * (2 * m < n ? -1 : 1);
                 const TIndex newLeft = std::max(left, TIndex(k - m * s / n + sd));
                 const TIndex newRight = std::min(right, TIndex(k + (n - m) * s / n + sd));
-                select(k, newLeft, newRight, axis);
+                select<axis>(k, newLeft, newRight);
             }
 
-            const TNumber t = coords[2 * k + axis];
+            const TNumber t = nth<axis, TPoint>::get(points[k]);
             TIndex i = left;
             TIndex j = right;
 
             swapItem(left, k);
-            if (coords[2 * right + axis] > t) swapItem(left, right);
+            if (nth<axis, TPoint>::get(points[right]) > t) swapItem(left, right);
 
             while (i < j) {
                 swapItem(i, j);
                 i++;
                 j--;
-                while (coords[2 * i + axis] < t) i++;
-                while (coords[2 * j + axis] > t) j--;
+                while (nth<axis, TPoint>::get(points[i]) < t) i++;
+                while (nth<axis, TPoint>::get(points[j]) > t) j--;
             }
 
-            if (coords[2 * left + axis] == t)
+            if (std::get<axis>(points[left]) == t)
                 swapItem(left, j);
             else {
                 j++;
@@ -161,8 +177,7 @@ private:
 
     void swapItem(const TIndex i, const TIndex j) {
         std::iter_swap(ids.begin() + i, ids.begin() + j);
-        std::iter_swap(coords.begin() + 2 * i, coords.begin() + 2 * j);
-        std::iter_swap(coords.begin() + 2 * i + 1, coords.begin() + 2 * j + 1);
+        std::iter_swap(points.begin() + i, points.begin() + j);
     }
 
     TNumber sqDist(const TNumber ax, const TNumber ay, const TNumber bx, const TNumber by) {

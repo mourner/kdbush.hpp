@@ -3,6 +3,8 @@
 #include <cmath>
 #include <vector>
 
+namespace kdbush {
+
 template <uint8_t I, typename T>
 struct nth {
     inline static typename std::tuple_element<I, T>::type get(const T &t) {
@@ -186,3 +188,5 @@ private:
         return dx * dx + dy * dy;
     }
 };
+
+} // namespace kdbush

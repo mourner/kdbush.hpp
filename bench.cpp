@@ -18,7 +18,7 @@ int main() {
     }
 
     const auto started = std::chrono::high_resolution_clock::now();
-    KDBush<Point> index(points);
+    kdbush::KDBush<Point> index(points);
     const auto finished = std::chrono::high_resolution_clock::now();
 
     const auto duration =

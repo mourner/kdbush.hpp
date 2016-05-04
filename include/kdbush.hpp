@@ -9,8 +9,16 @@ template<class TNumber = double, class TIndex = std::size_t>
 class KDBush {
 
 public:
-    KDBush(const std::vector<TNumber> &coords_, const uint8_t nodeSize_ = 64)
-        : coords(coords_), nodeSize(nodeSize_) {
+    static const uint8_t defaultNodeSize = 64;
+
+    KDBush(const std::vector<TNumber> &coords_, const uint8_t nodeSize_ = defaultNodeSize)
+        : KDBush(std::begin(coords_), std::end(coords_), nodeSize_) {}
+
+    template<typename TCoordIter>
+    KDBush(TCoordIter coordsBegin, TCoordIter coordsEnd, const uint8_t nodeSize_ = defaultNodeSize)
+        : coords(std::distance(coordsBegin, coordsEnd)), nodeSize(nodeSize_) {
+
+        std::copy(coordsBegin, coordsEnd, coords.data());
 
         const auto ids_size = coords.size() / 2;
         ids.reserve(ids_size);

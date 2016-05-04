@@ -1,4 +1,4 @@
-CFLAGS += -I include --std=c++14 -Wall -Wextra -Werror
+CFLAGS += -I include --std=c++14 -Wall -Wextra -Werror -O3
 
 test: include/kdbush.hpp test.cpp Makefile
 	$(CXX) test.cpp $(CFLAGS) -o test

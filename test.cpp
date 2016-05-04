@@ -39,4 +39,5 @@ static void testRadius() {
 int main() {
     testRange();
     testRadius();
+    return 0;
 }

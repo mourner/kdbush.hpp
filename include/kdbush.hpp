@@ -41,10 +41,10 @@ public:
         points.reserve(size);
         ids.reserve(size);
 
-        for (TIndex i = 0; i < size; i++) {
-            const auto p = *(points_begin + i);
-            points.emplace_back(nth<0, TPoint>::get(p), nth<1, TPoint>::get(p));
-            ids.push_back(i);
+        TIndex i = 0;
+        for (auto p = points_begin; p != points_end; p++) {
+            points.emplace_back(nth<0, TPoint>::get(*p), nth<1, TPoint>::get(*p));
+            ids.push_back(i++);
         }
 
         sortKD(0, size - 1, 0);

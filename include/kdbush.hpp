@@ -28,15 +28,20 @@ public:
     KDBush(TPointIter points_begin,
            TPointIter points_end,
            const uint8_t nodeSize_ = defaultNodeSize)
-        : points(std::distance(points_begin, points_end)), nodeSize(nodeSize_) {
+        : nodeSize(nodeSize_) {
 
-        std::copy(points_begin, points_end, points.data());
+        const TIndex size = std::distance(points_begin, points_end);
 
-        const auto ids_size = points.size();
-        ids.reserve(ids_size);
-        for (TIndex i = 0; i < ids_size; i++) ids.push_back(i);
+        points.reserve(size);
+        ids.reserve(size);
 
-        sortKD(0, ids.size() - 1, 0);
+        for (TIndex i = 0; i < size; i++) {
+            const auto p = *(points_begin + i);
+            points.emplace_back(nth<0, TPoint>::get(p), nth<1, TPoint>::get(p));
+            ids.push_back(i);
+        }
+
+        sortKD(0, size - 1, 0);
     }
 
     template <typename TOutputIter>
@@ -55,7 +60,7 @@ public:
 
 private:
     std::vector<TIndex> ids;
-    std::vector<TPoint> points;
+    std::vector<std::pair<TNumber, TNumber>> points;
     uint8_t nodeSize;
 
     template <typename TOutputIter>
@@ -70,16 +75,16 @@ private:
 
         if (right - left <= nodeSize) {
             for (auto i = left; i <= right; i++) {
-                const TNumber x = nth<0, TPoint>::get(points[i]);
-                const TNumber y = nth<1, TPoint>::get(points[i]);
+                const TNumber x = std::get<0>(points[i]);
+                const TNumber y = std::get<1>(points[i]);
                 if (x >= minX && x <= maxX && y >= minY && y <= maxY) *out++ = ids[i];
             }
             return;
         }
 
         const TIndex m = (left + right) >> 1;
-        const TNumber x = nth<0, TPoint>::get(points[m]);
-        const TNumber y = nth<1, TPoint>::get(points[m]);
+        const TNumber x = std::get<0>(points[m]);
+        const TNumber y = std::get<1>(points[m]);
 
         if (x >= minX && x <= maxX && y >= minY && y <= maxY) *out++ = ids[m];
 
@@ -103,16 +108,16 @@ private:
 
         if (right - left <= nodeSize) {
             for (auto i = left; i <= right; i++) {
-                const TNumber x = nth<0, TPoint>::get(points[i]);
-                const TNumber y = nth<1, TPoint>::get(points[i]);
+                const TNumber x = std::get<0>(points[i]);
+                const TNumber y = std::get<1>(points[i]);
                 if (sqDist(x, y, qx, qy) <= r2) *out++ = ids[i];
             }
             return;
         }
 
         const TIndex m = (left + right) >> 1;
-        const TNumber x = nth<0, TPoint>::get(points[m]);
-        const TNumber y = nth<1, TPoint>::get(points[m]);
+        const TNumber x = std::get<0>(points[m]);
+        const TNumber y = std::get<1>(points[m]);
 
         if (sqDist(x, y, qx, qy) <= r2) *out++ = ids[m];
 
@@ -150,19 +155,19 @@ private:
                 select<axis>(k, newLeft, newRight);
             }
 
-            const TNumber t = nth<axis, TPoint>::get(points[k]);
+            const TNumber t = std::get<axis>(points[k]);
             TIndex i = left;
             TIndex j = right;
 
             swapItem(left, k);
-            if (nth<axis, TPoint>::get(points[right]) > t) swapItem(left, right);
+            if (std::get<axis>(points[right]) > t) swapItem(left, right);
 
             while (i < j) {
                 swapItem(i, j);
                 i++;
                 j--;
-                while (nth<axis, TPoint>::get(points[i]) < t) i++;
-                while (nth<axis, TPoint>::get(points[j]) > t) j--;
+                while (std::get<axis>(points[i]) < t) i++;
+                while (std::get<axis>(points[j]) > t) j--;
             }
 
             if (std::get<axis>(points[left]) == t)

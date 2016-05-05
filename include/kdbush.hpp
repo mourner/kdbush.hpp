@@ -1,11 +1,14 @@
 #pragma once
 
+#include <algorithm>
 #include <cmath>
+#include <cstdint>
+#include <tuple>
 #include <vector>
 
 namespace kdbush {
 
-template <uint8_t I, typename T>
+template <std::uint8_t I, typename T>
 struct nth {
     inline static typename std::tuple_element<I, T>::type get(const T &t) {
         return std::get<I>(t);
@@ -18,16 +21,16 @@ class KDBush {
 public:
     using TNumber = decltype(nth<0, TPoint>::get(std::declval<TPoint>()));
 
-    static const uint8_t defaultNodeSize = 64;
+    static const std::uint8_t defaultNodeSize = 64;
 
-    KDBush(const std::vector<TPoint> &points_, const uint8_t nodeSize_ = defaultNodeSize)
+    KDBush(const std::vector<TPoint> &points_, const std::uint8_t nodeSize_ = defaultNodeSize)
         : KDBush(std::begin(points_), std::end(points_), nodeSize_) {
     }
 
     template <typename TPointIter>
     KDBush(TPointIter points_begin,
            TPointIter points_end,
-           const uint8_t nodeSize_ = defaultNodeSize)
+           const std::uint8_t nodeSize_ = defaultNodeSize)
         : nodeSize(nodeSize_) {
 
         const TIndex size = std::distance(points_begin, points_end);
@@ -61,7 +64,7 @@ public:
 private:
     std::vector<TIndex> ids;
     std::vector<std::pair<TNumber, TNumber>> points;
-    uint8_t nodeSize;
+    std::uint8_t nodeSize;
 
     template <typename TOutputIter>
     void range(const TNumber minX,
@@ -71,7 +74,7 @@ private:
                TOutputIter out,
                const TIndex left,
                const TIndex right,
-               const uint8_t axis) {
+               const std::uint8_t axis) {
 
         if (right - left <= nodeSize) {
             for (auto i = left; i <= right; i++) {
@@ -102,7 +105,7 @@ private:
                 TOutputIter out,
                 const TIndex left,
                 const TIndex right,
-                const uint8_t axis) {
+                const std::uint8_t axis) {
 
         const TNumber r2 = r * r;
 
@@ -128,7 +131,7 @@ private:
             within(qx, qy, r, out, m + 1, right, (axis + 1) % 2);
     }
 
-    void sortKD(const TIndex left, const TIndex right, const uint8_t axis) {
+    void sortKD(const TIndex left, const TIndex right, const std::uint8_t axis) {
         if (right - left <= nodeSize) return;
         const TIndex m = (left + right) >> 1;
         if (axis == 0) {
@@ -140,7 +143,7 @@ private:
         sortKD(m + 1, right, (axis + 1) % 2);
     }
 
-    template <uint8_t axis>
+    template <std::uint8_t axis>
     void select(const TIndex k, TIndex left, TIndex right) {
 
         while (right > left) {

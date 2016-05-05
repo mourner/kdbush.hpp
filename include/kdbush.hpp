@@ -146,41 +146,37 @@ private:
         sortKD(m + 1, right, (axis + 1) % 2);
     }
 
-    template <std::uint8_t axis>
+    template <std::uint8_t I>
     void select(const TIndex k, TIndex left, TIndex right) {
 
         while (right > left) {
             if (right - left > 600) {
-                const TIndex n = right - left + 1;
-                const TIndex m = k - left + 1;
-                const double z = log(n);
-                const double s = 0.5 * exp(2 * z / 3);
-                const double sd = 0.5 * sqrt(z * s * (n - s) / n) * (2 * m < n ? -1 : 1);
-                const TIndex newLeft = std::max(left, TIndex(k - m * s / n + sd));
-                const TIndex newRight = std::min(right, TIndex(k + (n - m) * s / n + sd));
-                select<axis>(k, newLeft, newRight);
+                const double n = right - left + 1;
+                const double m = k - left + 1;
+                const double z = std::log(n);
+                const double s = 0.5 * std::exp(2 * z / 3);
+                const double r =
+                    k - m * s / n + 0.5 * std::sqrt(z * s * (1 - s / n)) * (2 * m < n ? -1 : 1);
+                select<I>(k, std::max(left, TIndex(r)), std::min(right, TIndex(r + s)));
             }
 
-            const TNumber t = std::get<axis>(points[k]);
+            const TNumber t = std::get<I>(points[k]);
             TIndex i = left;
             TIndex j = right;
 
             swapItem(left, k);
-            if (std::get<axis>(points[right]) > t) swapItem(left, right);
+            if (std::get<I>(points[right]) > t) swapItem(left, right);
 
             while (i < j) {
-                swapItem(i, j);
-                i++;
-                j--;
-                while (std::get<axis>(points[i]) < t) i++;
-                while (std::get<axis>(points[j]) > t) j--;
+                swapItem(i++, j--);
+                while (std::get<I>(points[i]) < t) i++;
+                while (std::get<I>(points[j]) > t) j--;
             }
 
-            if (std::get<axis>(points[left]) == t)
+            if (std::get<I>(points[left]) == t)
                 swapItem(left, j);
             else {
-                j++;
-                swapItem(j, right);
+                swapItem(++j, right);
             }
 
             if (j <= k) left = j + 1;

@@ -10,14 +10,19 @@ int main() {
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> dis(-10000, 10000);
 
-    std::vector<int> coords;
-    for (std::size_t i = 0; i < 1000000; i++) {
-        coords.push_back(dis(gen));
-        coords.push_back(dis(gen));
+    using Point = std::pair<int, int>;
+
+    const std::size_t num_points = 1000000;
+
+    std::vector<Point> points;
+    points.reserve(num_points);
+
+    for (std::size_t i = 0; i < num_points; i++) {
+        points.emplace_back(dis(gen), dis(gen));
     }
 
     const auto started = std::chrono::high_resolution_clock::now();
-    KDBush<int> index(coords);
+    kdbush::KDBush<Point> index(points);
     const auto finished = std::chrono::high_resolution_clock::now();
 
     const auto duration =

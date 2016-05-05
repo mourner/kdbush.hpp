@@ -20,6 +20,9 @@ class KDBush {
 
 public:
     using TNumber = decltype(nth<0, TPoint>::get(std::declval<TPoint>()));
+    static_assert(
+        std::is_same<TNumber, decltype(nth<1, TPoint>::get(std::declval<TPoint>()))>::value,
+        "point component types must be identical");
 
     static const std::uint8_t defaultNodeSize = 64;
 

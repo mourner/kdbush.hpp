@@ -31,8 +31,8 @@ public:
     }
 
     template <typename TPointIter>
-    KDBush(TPointIter points_begin,
-           TPointIter points_end,
+    KDBush(const TPointIter &points_begin,
+           const TPointIter &points_end,
            const std::uint8_t nodeSize_ = defaultNodeSize)
         : nodeSize(nodeSize_) {
 

@@ -1,17 +1,24 @@
 CFLAGS += -I include --std=c++14 -Wall -Wextra -Werror -O3
+DEPS = Makefile include/kdbush.hpp
 
-test: include/kdbush.hpp test.cpp Makefile
-	$(CXX) test.cpp $(CFLAGS) -o test
-	./test
+build/test: test.cpp $(DEPS)
+	mkdir -p build
+	$(CXX) test.cpp $(CFLAGS) -o build/test
 
-bench: include/kdbush.hpp bench.cpp Makefile
-	$(CXX) bench.cpp $(CFLAGS) -o bench
-	./bench
+build/bench: bench.cpp $(DEPS)
+	mkdir -p build
+	$(CXX) bench.cpp $(CFLAGS) -o build/bench
+
+run-bench: build/bench
+	./build/bench
+
+run-test: build/test
+	./build/test
 
 format:
 	clang-format include/*.hpp *.cpp -i
 
 clean:
-	rm test
+	rm -rf build
 
-default: test
+default: run-test

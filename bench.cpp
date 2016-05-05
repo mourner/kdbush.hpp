@@ -12,8 +12,12 @@ int main() {
 
     using Point = std::pair<int, int>;
 
+    const std::size_t num_points = 1000000;
+
     std::vector<Point> points;
-    for (std::size_t i = 0; i < 1000000; i++) {
+    points.reserve(num_points);
+
+    for (std::size_t i = 0; i < num_points; i++) {
         points.emplace_back(dis(gen), dis(gen));
     }
 

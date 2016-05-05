@@ -32,11 +32,7 @@ public:
 
         std::copy(points_begin, points_end, points.data());
 
-        const auto ids_size = points.size();
-        ids.reserve(ids_size);
-        for (TIndex i = 0; i < ids_size; i++) ids.push_back(i);
-
-        sortKD(0, ids.size() - 1, 0);
+        sortKD(0, points.size() - 1, 0);
     }
 
     template <typename TOutputIter>
@@ -45,16 +41,15 @@ public:
                const TNumber maxX,
                const TNumber maxY,
                TOutputIter out) {
-        range(minX, minY, maxX, maxY, out, 0, ids.size() - 1, 0);
+        range(minX, minY, maxX, maxY, out, 0, points.size() - 1, 0);
     }
 
     template <typename TOutputIter>
     void within(const TNumber qx, const TNumber qy, const TNumber r, TOutputIter out) {
-        within(qx, qy, r, out, 0, ids.size() - 1, 0);
+        within(qx, qy, r, out, 0, points.size() - 1, 0);
     }
 
 private:
-    std::vector<TIndex> ids;
     std::vector<TPoint> points;
     uint8_t nodeSize;
 
@@ -72,7 +67,7 @@ private:
             for (auto i = left; i <= right; i++) {
                 const TNumber x = nth<0, TPoint>::get(points[i]);
                 const TNumber y = nth<1, TPoint>::get(points[i]);
-                if (x >= minX && x <= maxX && y >= minY && y <= maxY) *out++ = ids[i];
+                if (x >= minX && x <= maxX && y >= minY && y <= maxY) *out++ = points[i];
             }
             return;
         }
@@ -81,7 +76,7 @@ private:
         const TNumber x = nth<0, TPoint>::get(points[m]);
         const TNumber y = nth<1, TPoint>::get(points[m]);
 
-        if (x >= minX && x <= maxX && y >= minY && y <= maxY) *out++ = ids[m];
+        if (x >= minX && x <= maxX && y >= minY && y <= maxY) *out++ = points[m];
 
         if (axis == 0 ? minX <= x : minY <= y)
             range(minX, minY, maxX, maxY, out, left, m - 1, (axis + 1) % 2);
@@ -105,7 +100,7 @@ private:
             for (auto i = left; i <= right; i++) {
                 const TNumber x = nth<0, TPoint>::get(points[i]);
                 const TNumber y = nth<1, TPoint>::get(points[i]);
-                if (sqDist(x, y, qx, qy) <= r2) *out++ = ids[i];
+                if (sqDist(x, y, qx, qy) <= r2) *out++ = points[i];
             }
             return;
         }
@@ -114,7 +109,7 @@ private:
         const TNumber x = nth<0, TPoint>::get(points[m]);
         const TNumber y = nth<1, TPoint>::get(points[m]);
 
-        if (sqDist(x, y, qx, qy) <= r2) *out++ = ids[m];
+        if (sqDist(x, y, qx, qy) <= r2) *out++ = points[m];
 
         if (axis == 0 ? qx - r <= x : qy - r <= y)
             within(qx, qy, r, out, left, m - 1, (axis + 1) % 2);
@@ -178,7 +173,6 @@ private:
     }
 
     void swapItem(const TIndex i, const TIndex j) {
-        std::iter_swap(ids.begin() + i, ids.begin() + j);
         std::iter_swap(points.begin() + i, points.begin() + j);
     }
 

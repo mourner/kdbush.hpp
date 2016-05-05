@@ -194,9 +194,7 @@ private:
     }
 
     TNumber sqDist(const TNumber ax, const TNumber ay, const TNumber bx, const TNumber by) {
-        const TNumber dx = ax - bx;
-        const TNumber dy = ay - by;
-        return dx * dx + dy * dy;
+        return std::pow(ax - bx, 2) + std::pow(ay - by, 2);
     }
 };
 

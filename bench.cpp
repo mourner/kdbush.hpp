@@ -6,8 +6,7 @@
 #include <vector>
 
 int main() {
-    std::random_device rd;
-    std::mt19937 gen(rd());
+    std::mt19937 gen(0);
     std::uniform_int_distribution<> dis(-10000, 10000);
 
     using Point = std::pair<int, int>;

@@ -28,7 +28,7 @@ static void testRange() {
     kdbush::KDBush<TPoint> index(points, 10);
     TIds expectedIds = { 3, 90, 77, 72, 62, 96, 47, 8, 17, 15, 69, 71, 44, 19, 18, 45, 60, 20 };
     TIds result;
-    index.range(20, 30, 50, 70, std::back_inserter(result));
+    index.range(20, 30, 50, 70, [&result](const auto id) { result.push_back(id); });
 
     assert(std::equal(expectedIds.begin(), expectedIds.end(), result.begin()));
 }
@@ -37,7 +37,7 @@ static void testRadius() {
     kdbush::KDBush<TPoint> index(points, 10);
     TIds expectedIds = { 3, 96, 71, 44, 18, 45, 60, 6, 25, 92, 42, 20 };
     TIds result;
-    index.within(50, 50, 20, std::back_inserter(result));
+    index.within(50, 50, 20, [&result](const auto id) { result.push_back(id); });
 
     assert(std::equal(expectedIds.begin(), expectedIds.end(), result.begin()));
 }

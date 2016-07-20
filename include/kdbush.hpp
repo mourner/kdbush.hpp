@@ -49,7 +49,7 @@ public:
     template <typename TPointIter>
     void fill(const TPointIter &points_begin, const TPointIter &points_end) {
         assert(points.empty());
-        const TIndex size = std::distance(points_begin, points_end);
+        const TIndex size = static_cast<TIndex>(std::distance(points_begin, points_end));
 
         points.reserve(size);
         ids.reserve(size);
@@ -69,12 +69,12 @@ public:
                const TNumber maxX,
                const TNumber maxY,
                const TVisitor &visitor) {
-        range(minX, minY, maxX, maxY, visitor, 0, ids.size() - 1, 0);
+        range(minX, minY, maxX, maxY, visitor, 0, static_cast<TIndex>(ids.size() - 1), 0);
     }
 
     template <typename TVisitor>
     void within(const TNumber qx, const TNumber qy, const TNumber r, const TVisitor &visitor) {
-        within(qx, qy, r, visitor, 0, ids.size() - 1, 0);
+        within(qx, qy, r, visitor, 0, static_cast<TIndex>(ids.size() - 1), 0);
     }
 
 private:

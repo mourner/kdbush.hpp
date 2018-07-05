@@ -198,12 +198,14 @@ private:
     }
 
     void swapItem(const TIndex i, const TIndex j) {
-        std::iter_swap(ids.begin() + i, ids.begin() + j);
-        std::iter_swap(points.begin() + i, points.begin() + j);
+        std::iter_swap(ids.begin() + static_cast<std::int32_t>(i), ids.begin() + static_cast<std::int32_t>(j));
+        std::iter_swap(points.begin() + static_cast<std::int32_t>(i), points.begin() + static_cast<std::int32_t>(j));
     }
 
     TNumber sqDist(const TNumber ax, const TNumber ay, const TNumber bx, const TNumber by) {
-        return std::pow(ax - bx, 2) + std::pow(ay - by, 2);
+        auto dx = ax - bx;
+        auto dy = ay - by;
+        return dx * dx + dy * dy;
     }
 };
 

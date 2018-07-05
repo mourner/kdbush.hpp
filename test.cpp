@@ -42,8 +42,14 @@ static void testRadius() {
     assert(std::equal(expectedIds.begin(), expectedIds.end(), result.begin()));
 }
 
+static void testEmpty() {
+    auto emptyPoints = std::vector<TPoint>{};
+    kdbush::KDBush<TPoint> index(emptyPoints);
+}
+
 int main() {
     testRange();
     testRadius();
+    testEmpty();
     return 0;
 }

@@ -51,6 +51,8 @@ public:
         assert(points.empty());
         const TIndex size = static_cast<TIndex>(std::distance(points_begin, points_end));
 
+        if (size == 0) return;
+
         points.reserve(size);
         ids.reserve(size);
 

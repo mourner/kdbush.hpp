@@ -45,6 +45,12 @@ static void testRadius() {
 static void testEmpty() {
     auto emptyPoints = std::vector<TPoint>{};
     kdbush::KDBush<TPoint> index(emptyPoints);
+    // test no crash when using empty index
+    TIds result;
+    index.within(50, 50, 20, [&result](const auto id) { result.push_back(id); });
+    assert(result.empty());
+    index.range(20, 30, 50, 70, [&result](const auto id) { result.push_back(id); });
+    assert(result.empty());
 }
 
 int main() {

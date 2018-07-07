@@ -96,6 +96,8 @@ private:
                const TIndex right,
                const std::uint8_t axis) {
 
+        if (points.empty()) return;
+
         if (right - left <= nodeSize) {
             for (auto i = left; i <= right; i++) {
                 const TNumber x = std::get<0>(points[i]);
@@ -126,6 +128,8 @@ private:
                 const TIndex left,
                 const TIndex right,
                 const std::uint8_t axis) {
+
+        if (points.empty()) return;
 
         const TNumber r2 = r * r;
 

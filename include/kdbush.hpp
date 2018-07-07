@@ -79,9 +79,11 @@ public:
         within(qx, qy, r, visitor, 0, static_cast<TIndex>(ids.size() - 1), 0);
     }
 
-private:
+protected:
     std::vector<TIndex> ids;
     std::vector<std::pair<TNumber, TNumber>> points;
+
+private:
     std::uint8_t nodeSize;
 
     template <typename TVisitor>

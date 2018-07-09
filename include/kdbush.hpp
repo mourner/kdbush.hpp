@@ -70,12 +70,12 @@ public:
                const TNumber minY,
                const TNumber maxX,
                const TNumber maxY,
-               const TVisitor &visitor) {
+               const TVisitor &visitor) const {
         range(minX, minY, maxX, maxY, visitor, 0, static_cast<TIndex>(ids.size() - 1), 0);
     }
 
     template <typename TVisitor>
-    void within(const TNumber qx, const TNumber qy, const TNumber r, const TVisitor &visitor) {
+    void within(const TNumber qx, const TNumber qy, const TNumber r, const TVisitor &visitor) const {
         within(qx, qy, r, visitor, 0, static_cast<TIndex>(ids.size() - 1), 0);
     }
 
@@ -84,7 +84,7 @@ protected:
     std::vector<std::pair<TNumber, TNumber>> points;
 
 private:
-    std::uint8_t nodeSize;
+    const std::uint8_t nodeSize;
 
     template <typename TVisitor>
     void range(const TNumber minX,
@@ -94,7 +94,7 @@ private:
                const TVisitor &visitor,
                const TIndex left,
                const TIndex right,
-               const std::uint8_t axis) {
+               const std::uint8_t axis) const {
 
         if (points.empty()) return;
 
@@ -127,7 +127,7 @@ private:
                 const TVisitor &visitor,
                 const TIndex left,
                 const TIndex right,
-                const std::uint8_t axis) {
+                const std::uint8_t axis) const {
 
         if (points.empty()) return;
 
@@ -210,7 +210,7 @@ private:
         std::iter_swap(points.begin() + static_cast<std::int32_t>(i), points.begin() + static_cast<std::int32_t>(j));
     }
 
-    TNumber sqDist(const TNumber ax, const TNumber ay, const TNumber bx, const TNumber by) {
+    TNumber sqDist(const TNumber ax, const TNumber ay, const TNumber bx, const TNumber by) const {
         auto dx = ax - bx;
         auto dy = ay - by;
         return dx * dx + dy * dy;

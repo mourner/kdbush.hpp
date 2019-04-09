@@ -172,8 +172,8 @@ private:
 
         while (right > left) {
             if (right - left > 600) {
-                const double n = right - left + 1;
-                const double m = k - left + 1;
+                const double n = static_cast<double>(right - left + 1);
+                const double m = static_cast<double>(k - left + 1);
                 const double z = std::log(n);
                 const double s = 0.5 * std::exp(2 * z / 3);
                 const double r =
